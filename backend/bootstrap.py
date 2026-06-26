@@ -207,48 +207,48 @@ _CANARY_TOKENS = [
         "label": ".env in leaked .git repo",
         "description": "Production .env.production leaked via an exposed /.git/ on the tripwire (8082).",
         "token_kind": "file",
-        "difficulty": 3,
-        "score_value": 0.40,
+        "difficulty": 2,
+        "score_value": 0.25,
     },
     {
         "id": "e8ca06a6-7123-4a08-9262-38c347248e51",
         "label": "Staging DB dump in /tmp (SSH)",
         "description": "database_backup.sql planted in /tmp/ in the Cowrie SSH honeypot (2222).",
         "token_kind": "file",
-        "difficulty": 3,
-        "score_value": 0.40,
+        "difficulty": 2,
+        "score_value": 0.25,
     },
     {
         "id": "7aedcaf0-b627-4f6f-95e8-5e59d891147e",
         "label": "Root SSH key in /root/.ssh (SSH)",
         "description": "id_rsa planted in /root/.ssh/ inside the Cowrie SSH honeypot (port 2222) — root-level breach.",
         "token_kind": "file",
-        "difficulty": 4,
-        "score_value": 0.60,
+        "difficulty": 3,
+        "score_value": 0.40,
     },
     {
         "id": "a1b2c3d4-e5f6-4071-8293-a4b5c6d7e8f9",
         "label": "Prod DB dump in /var/backups (SSH)",
         "description": "prod_db_dump.sql planted in /var/backups/db/ inside the Cowrie SSH honeypot (port 2222).",
         "token_kind": "file",
-        "difficulty": 3,
-        "score_value": 0.40,
+        "difficulty": 2,
+        "score_value": 0.25,
     },
     {
         "id": "c3f1a2b4-5d6e-4f80-9a1b-2c3d4e5f6071",
         "label": "AWS credentials in ~/.aws (SSH)",
         "description": "AWS key id/secret at /home/deploy/.aws/credentials (Cowrie SSH honeypot 2222).",
         "token_kind": "aws_key",
-        "difficulty": 3,
-        "score_value": 0.40,
+        "difficulty": 2,
+        "score_value": 0.25,
     },
     {
         "id": "d4e2b3c5-6e7f-4a91-8b2c-3d4e5f607182",
         "label": "App secrets in /opt/app/.env (SSH)",
         "description": "App .env with DB/JWT/Stripe/SMTP secrets at /opt/app/.env (Cowrie SSH honeypot 2222).",
         "token_kind": "file",
-        "difficulty": 3,
-        "score_value": 0.40,
+        "difficulty": 2,
+        "score_value": 0.25,
     },
     {
         "id": "b7c8d9e0-1f23-4a56-8b9c-0d1e2f3a4b5c",
@@ -263,26 +263,27 @@ _CANARY_TOKENS = [
         "label": "Fake network dump (tcpdump.pcap) (SSH)",
         "description": "tcpdump.pcap network dump file accessed in /var/log/ (Cowrie SSH 2222).",
         "token_kind": "file",
-        "difficulty": 3,
-        "score_value": 0.40,
+        "difficulty": 2,
+        "score_value": 0.25,
     },
     {
         "id": "f0db08b8-9124-4c0a-9264-38c347248e53",
         "label": "Admin todo list (todo.txt) (SSH)",
         "description": "todo.txt accessed in /home/deploy/ containing recon clues (Cowrie SSH 2222).",
         "token_kind": "file",
-        "difficulty": 2,
-        "score_value": 0.25,
+        "difficulty": 1,
+        "score_value": 0.15,
     },
     {
         "id": "a2c3d4e5-f6a7-4082-9304-b5c6d7e8f90a",
         "label": "Backup automated script (backup_script.sh) (SSH)",
         "description": "backup_script.sh accessed in /opt/ containing hardcoded credentials (Cowrie SSH 2222).",
         "token_kind": "file",
-        "difficulty": 3,
-        "score_value": 0.40,
+        "difficulty": 2,
+        "score_value": 0.25,
     },
 ]
+
 
 
 
@@ -299,7 +300,7 @@ async def ensure_canary_tokens(session: Any) -> int:
                 if getattr(existing, attr) != ct[attr]:
                     setattr(existing, attr, ct[attr])
                     changed = True
-            if existing.score_value == 0.0 and ct["score_value"] > 0:
+            if existing.score_value != ct["score_value"]:
                 existing.score_value = ct["score_value"]
                 changed = True
             if not existing.is_active:
