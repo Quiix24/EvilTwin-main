@@ -25,6 +25,45 @@ BACKEND_TIMEOUT = float(os.getenv("BACKEND_TIMEOUT", "2.0"))
 GATEWAY_LISTEN_PORT = int(os.getenv("GATEWAY_LISTEN_PORT", "22"))
 HOST_KEY_PATH = os.getenv("HOST_KEY_PATH", "/etc/eviltwin/ssh_host_rsa_key")
 
+def load_fake_credentials(filepath: str = "userdb.txt") -> set[tuple[str, str]]:
+    creds = set()
+    default_creds = {
+        ("root", "admin123"),
+        ("root", "password"),
+        ("admin", "admin"),
+        ("ubuntu", "ubuntu"),
+        ("deploy", "deploy"),
+    }
+    if not os.path.exists(filepath):
+        logger.warning("userdb.txt not found at %s, using fallback credentials", filepath)
+        return default_creds
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                parts = line.split(":")
+                if len(parts) >= 3:
+                    username = parts[0]
+                    password = parts[2]
+                    creds.add((username, password))
+        logger.info("Loaded %d credentials from %s", len(creds), filepath)
+        return creds
+    except Exception as exc:
+        logger.warning("Failed to load userdb.txt (%s), using fallback credentials", exc)
+        return default_creds
+
+
+def validate_credentials(username: str, password: str, allowed_creds: set[tuple[str, str]]) -> bool:
+    if REAL_SSH_USER and username == REAL_SSH_USER and password == REAL_SSH_PASSWORD:
+        return True
+    for u, p in allowed_creds:
+        if u == username:
+            if p == "*" or p == password:
+                return True
+    return False
+
 SUSPICIOUS_USERNAMES = {
     "root", "admin", "administrator", "test", "guest", "user",
     "ubuntu", "debian", "centos", "pi", "oracle", "postgres",
@@ -299,6 +338,7 @@ class GatewayServer(asyncssh.SSHServer):
         self._signals: Optional[SessionSignals] = None
         self._score_task: Optional[asyncio.Task] = None
         self._auth_accepted: bool = False
+        self.allowed_creds = load_fake_credentials()
 
     def connection_made(self, conn: asyncssh.SSHServerConnection) -> None:
         peer = conn.get_extra_info("peername") if hasattr(conn, "get_extra_info") else None
@@ -340,7 +380,7 @@ class GatewayServer(asyncssh.SSHServer):
                 self._request_score()
             )
 
-        return True
+        return validate_credentials(username, password, self.allowed_creds)
 
     def validate_public_key(
         self, username: str, key: asyncssh.SSHKey
@@ -377,7 +417,8 @@ class GatewayServer(asyncssh.SSHServer):
                 self._request_score()
             )
 
-        return True
+        return validate_credentials(username, password, self.allowed_creds)
+
 
     async def _request_score(self) -> None:
         assert self._signals is not None

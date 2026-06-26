@@ -2,7 +2,12 @@ FROM cowrie/cowrie:latest
 
 USER root
 
+COPY cowrie.cfg /cowrie/cowrie-git/etc/cowrie.cfg
+COPY cowrie.cfg /cowrie/cowrie-git/cowrie.cfg
 COPY cowrie.cfg /cowrie/etc/cowrie.cfg
+
+COPY userdb.txt /cowrie/cowrie-git/etc/userdb.txt
+COPY userdb.txt /cowrie/etc/userdb.txt
 
 # Plant graduated bait files inside the fake SSH filesystem so they show up in
 # `ls` and `cat` returns the real bytes. Baits are scattered across realistic

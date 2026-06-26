@@ -28,6 +28,10 @@ BAITS = [
     ("/home/deploy/.aws/credentials", "home/deploy/.aws/credentials", 0o600, 95),
     ("/opt/app/.env", "opt/app/.env", 0o640, 60),
     ("/var/backups/db/prod_db_dump.sql", "var/backups/db/prod_db_dump.sql", 0o644, 7),
+    ("/var/log/tcpdump.pcap", "var/log/tcpdump.pcap", 0o644, 5),
+    ("/home/deploy/todo.txt", "home/deploy/todo.txt", 0o644, 3),
+    ("/opt/backup_script.sh", "opt/backup_script.sh", 0o755, 10),
+    ("/var/www/html/config.php", "var/www/html/config.php", 0o644, 15),
 ]
 
 # Cowrie fs.pickle record layout. Prefer the installed package constants;

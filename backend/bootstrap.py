@@ -258,7 +258,32 @@ _CANARY_TOKENS = [
         "difficulty": 1,
         "score_value": 0.15,
     },
+    {
+        "id": "e9cb07a7-8123-4b09-9263-38c347248e52",
+        "label": "Fake network dump (tcpdump.pcap) (SSH)",
+        "description": "tcpdump.pcap network dump file accessed in /var/log/ (Cowrie SSH 2222).",
+        "token_kind": "file",
+        "difficulty": 3,
+        "score_value": 0.40,
+    },
+    {
+        "id": "f0db08b8-9124-4c0a-9264-38c347248e53",
+        "label": "Admin todo list (todo.txt) (SSH)",
+        "description": "todo.txt accessed in /home/deploy/ containing recon clues (Cowrie SSH 2222).",
+        "token_kind": "file",
+        "difficulty": 2,
+        "score_value": 0.25,
+    },
+    {
+        "id": "a2c3d4e5-f6a7-4082-9304-b5c6d7e8f90a",
+        "label": "Backup automated script (backup_script.sh) (SSH)",
+        "description": "backup_script.sh accessed in /opt/ containing hardcoded credentials (Cowrie SSH 2222).",
+        "token_kind": "file",
+        "difficulty": 3,
+        "score_value": 0.40,
+    },
 ]
+
 
 
 async def ensure_canary_tokens(session: Any) -> int:

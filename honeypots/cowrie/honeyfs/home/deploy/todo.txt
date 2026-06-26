@@ -1,0 +1,6 @@
+SYSTEM DEPLOYMENT TODO:
+1. [DONE] Rotate AWS deployer keys.
+2. [PENDING] Investigate SSH login attempts on internal database host (10.0.1.50).
+3. [PENDING] Update application API keys in /opt/app/.env (Stripe & Sendgrid).
+4. [PENDING] Configure daily backup scp transfer to backup storage host (10.0.1.60).
+5. [DONE] Clear old system logs to free disk space (except /var/log/tcpdump.pcap).

@@ -1,0 +1,6 @@
+# User Database
+root:0:admin123
+root:0:password
+admin:0:admin
+ubuntu:0:ubuntu
+deploy:0:deploy
