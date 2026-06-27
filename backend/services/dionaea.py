@@ -181,8 +181,8 @@ def _build_payload(
 
     try:
         return LogIngestRequest.model_validate(payload)
-    except Exception:
-        logger.debug("Skipping invalid Dionaea event: %s", payload.get("eventid", "?"))
+    except Exception as e:
+        logger.warning("Skipping invalid Dionaea event: %s. Error: %s", payload.get("eventid", "?"), e)
         return None
 
 
@@ -471,7 +471,7 @@ def _parse_credential_events(base_payload: dict[str, Any], raw_event: dict[str, 
 def parse_dionaea_event(raw_event: dict[str, Any], honeypot_ip: str) -> list[LogIngestRequest]:
     incident_payloads = _parse_incident_event(raw_event, honeypot_ip)
     if incident_payloads:
-        return incident_payloads
+        return [p for p in incident_payloads if p is not None]
 
     base_payload = _base_payload(raw_event, honeypot_ip)
     if base_payload is None:
@@ -491,7 +491,7 @@ def parse_dionaea_event(raw_event: dict[str, Any], honeypot_ip: str) -> list[Log
     ]
     payloads.extend(_parse_ftp_command_events(base_payload, raw_event))
     payloads.extend(_parse_credential_events(base_payload, raw_event))
-    return payloads
+    return [p for p in payloads if p is not None]
 
 
 @asynccontextmanager
